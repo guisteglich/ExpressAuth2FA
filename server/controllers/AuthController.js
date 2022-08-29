@@ -1,7 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 const { body, validationResult } = require('express-validator');
+
+require('dotenv').config();
 
 const Users = require('../models/User')
 
@@ -47,13 +50,15 @@ router.post('/register', (req, res) => {
 })
 
 router.post('/login', (req, res) => {
+        const { email, password } = req.body
+        const token = jwt.sign({user: email}, process.env.SECRET ,{expiresIn: 86400})
+        
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
 
         console.log(req.body)
-        const { email, password } = req.body
 
         Users.findOne({email: email})
             .then(user => {
@@ -61,7 +66,7 @@ router.post('/login', (req, res) => {
                     const isValid = bcrypt.compareSync(password, user.password)
                     if (isValid) {
                         // req.session.user = { id: user._id }
-                        return res.json({ success: true, message: "Login efetuado com sucesso!" });
+                        return res.cookie("access_token", token).json({ success: true, message: "Login efetuado com sucesso!"});
                         // res.redirect('/')
                     }
                 }
