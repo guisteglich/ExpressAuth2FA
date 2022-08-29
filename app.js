@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 
+require('dotenv').config();
+
 const AuthController = require('./server/controllers/AuthController')
 
 // respond with "hello world" when a GET request is made to the homepage
