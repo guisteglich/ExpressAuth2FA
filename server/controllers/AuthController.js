@@ -58,7 +58,7 @@ router.post('/login', (req, res) => {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        console.log(req.body)
+        // console.log(req.body)
 
         Users.findOne({email: email})
             .then(user => {
@@ -66,12 +66,32 @@ router.post('/login', (req, res) => {
                     const isValid = bcrypt.compareSync(password, user.password)
                     if (isValid) {
                         // req.session.user = { id: user._id }
-                        return res.cookie("access_token", token).json({ success: true, message: "Login efetuado com sucesso!"});
-                        // res.redirect('/')
+                        return res.cookie("access_token", token).json({ success: true, message: "Login efetuado com sucesso! "});
+                        //return res.cookie("access_token", token).redirect('/')
                     }
                 }
                 res.status(400).send({ message: "Login inválido, verifique seus dados." })
             })
+})
+
+router.post('/authentication', (req, res) => {
+    const data = req.headers.cookie
+
+    values = data.split(';')
+    token = values[1].split('=')
+
+    // console.log(token[1])
+    const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+    const isValid = jwt.verify(token[1],  process.env.SECRET)
+    if (isValid) {
+        return res.json({ success: true, message: "Autorizado meu fi."});
+        // res.redirect('/')
+    }
+    res.status(401).send({ message: "Autorização inválida, proibido de entrar meu fi." })
+
 })
 
 module.exports = router
