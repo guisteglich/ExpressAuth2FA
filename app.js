@@ -17,6 +17,8 @@ app.get('/', function(req, res) {
 app.use(cors());
 app.use(express.json());
 
+app.use(express.static('server'));
+
 app.use(AuthController)
 
 const PORT = process.env.PORT || 3002;
