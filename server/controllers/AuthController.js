@@ -51,7 +51,7 @@ router.post('/register', (req, res) => {
 
 router.post('/login', (req, res) => {
         const { email, password } = req.body
-        const token = jwt.sign({user: email}, process.env.SECRET ,{expiresIn: 86400})
+        const token = jwt.sign({user: email}, process.env.SECRET ,{expiresIn: 24*3600}) //24h
         
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
